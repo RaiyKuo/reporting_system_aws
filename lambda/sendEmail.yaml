@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  sendEmail:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: sendEmailCode.lambda_handler
+      Runtime: python3.6
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 3
+      Role: 'arn:aws:iam::474850310752:role/reporting_system_sendEmail_lambda'
+      Events:
+        SQS1:
+          Type: SQS
+          Properties:
+            Queue:
+              'Fn::GetAtt':
+                - SQSQueue1
+                - Arn
+            BatchSize: 10
+      Environment:
+        Variables:
+          email_account: kuohungjui
+          email_password: miamkqlsbrfdyxdr
+  SQSQueue1:
+    Type: 'AWS::SQS::Queue'
+    Properties: {}
