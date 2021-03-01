@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ReportController {
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
 
-    private final ReportService reportService;   //Ask: why doesn't need @Autowired here?
+    private final ReportService reportService;
 
     public ReportController(ReportService reportService) {
         this.reportService = reportService;

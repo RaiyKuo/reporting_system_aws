@@ -25,7 +25,7 @@ public class TestSNS {
         request.setDescription("This is just a test");
         request.setHeaders(List.of("Id","Name","Age"));
         request.setData(List.of(List.of("1","Dd","23"),List.of("2","AJ","32")));
-   //     reportService.generateReports(request);
+//        reportService.generateReports(request);
     }
     @Test
     public void testSNSSend() {

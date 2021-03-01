@@ -3,7 +3,7 @@
 
 ### Documentation
 
-* **git:** Update CHANGELOG.md based on commit messages c237b48
+* **git:** Update CHANGELOG.md based on commit messages fc58920
 
 
 ### BREAKING CHANGES
