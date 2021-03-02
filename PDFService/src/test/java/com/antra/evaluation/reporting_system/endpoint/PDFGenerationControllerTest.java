@@ -36,7 +36,7 @@ class PDFGenerationControllerTest {
         pdfRequest.setHeaders(List.of("Id","Name","Age"));
         pdfRequest.setData(List.of(List.of("1","Dd","23"),List.of("2","AJ","32")));
         pdfRequest.setDescription("This is a test");
-        pdfRequest.setSubmitter("class PDFRequestQueueListenerTest");
+        pdfRequest.setSubmitter("class PDFGenerationControllerTest");
     }
 
     /**
@@ -48,7 +48,10 @@ class PDFGenerationControllerTest {
         assertEquals(HttpStatus.OK, responseResponseEntity.getStatusCode());
         PDFResponse response = responseResponseEntity.getBody();
         assertNotNull(response);
-        assertFalse(response.isFailed());
-        assertEquals(UUID_SAMPLE, response.getReqId());
+        assertAll("Check response is correct",
+                ()->assertFalse(response.isFailed()),
+                ()->assertEquals(UUID_SAMPLE, response.getReqId())
+        );
+        System.out.println(response.getFileLocation());
     }
 }

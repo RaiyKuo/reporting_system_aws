@@ -29,6 +29,7 @@ public class APITest {
     }
 
     @Test
+    @Disabled
     public void testFileDownload() throws FileNotFoundException {
         Mockito.when(excelService.getExcelBodyById(anyString())).thenReturn(new FileInputStream("temp.xlsx"));
         given().accept("application/json").get("/excel/123abcd/content").peek().
