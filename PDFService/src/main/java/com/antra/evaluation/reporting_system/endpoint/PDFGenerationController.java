@@ -6,13 +6,14 @@ import com.antra.evaluation.reporting_system.pojo.report.PDFFile;
 import com.antra.evaluation.reporting_system.service.PDFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.FileNotFoundException;
 
 @RestController
 public class PDFGenerationController {
@@ -45,6 +46,22 @@ public class PDFGenerationController {
             response.setFailed(true);
             log.error("Error in generating pdf", e);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/pdf/{id}")
+    public ResponseEntity<PDFResponse> deletePDF(@PathVariable String id) throws FileNotFoundException {
+        log.debug("Got Request to Delete File:{}", id);
+        var response = new PDFResponse();
+        PDFFile fileDeleted = null;
+        try {
+            fileDeleted = pdfService.deleteFile(id);
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        BeanUtils.copyProperties(fileDeleted, response);
+        response.setFileLocation(fileDeleted.getFileLocation());
+        log.debug("File Deleted:{}", fileDeleted);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

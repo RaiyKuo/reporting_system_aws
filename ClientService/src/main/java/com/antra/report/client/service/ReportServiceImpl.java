@@ -48,7 +48,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private ReportRequestEntity persistToLocal(ReportRequest request) {
-        request.setReqId("Req-"+ UUID.randomUUID().toString());
+        request.setReqId("Req-" + UUID.randomUUID().toString());
 
         ReportRequestEntity entity = new ReportRequestEntity();
         entity.setReqId(request.getReqId());
@@ -75,6 +75,7 @@ public class ReportServiceImpl implements ReportService {
         sendDirectRequests(request);
         return new ReportVO(reportRequestRepo.findById(request.getReqId()).orElseThrow());
     }
+
     //TODO:Change to parallel process using Threadpool? CompletableFuture?
     private void sendDirectRequests(ReportRequest request) {
         RestTemplate rs = new RestTemplate();
@@ -82,7 +83,7 @@ public class ReportServiceImpl implements ReportService {
         PDFResponse pdfResponse = new PDFResponse();
         try {
             excelResponse = rs.postForEntity("http://localhost:8888/excel", request, ExcelResponse.class).getBody();
-        } catch(Exception e){
+        } catch (Exception e) {
             log.error("Excel Generation Error (Sync) : e", e);
             excelResponse.setReqId(request.getReqId());
             excelResponse.setFailed(true);
@@ -91,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
         }
         try {
             pdfResponse = rs.postForEntity("http://localhost:9999/pdf", request, PDFResponse.class).getBody();
-        } catch(Exception e){
+        } catch (Exception e) {
             log.error("PDF Generation Error (Sync) : e", e);
             pdfResponse.setReqId(request.getReqId());
             pdfResponse.setFailed(true);
@@ -105,6 +106,7 @@ public class ReportServiceImpl implements ReportService {
         BeanUtils.copyProperties(excelResponse, response);
         updateAsyncExcelReport(response);
     }
+
     private void updateLocal(PDFResponse pdfResponse) {
         SqsResponse response = new SqsResponse();
         BeanUtils.copyProperties(pdfResponse, response);
@@ -116,7 +118,7 @@ public class ReportServiceImpl implements ReportService {
     public ReportVO generateReportsAsync(ReportRequest request) {
         ReportRequestEntity entity = persistToLocal(request);
         snsService.sendReportNotification(request);
-        log.info("Send SNS the message: {}",request);
+        log.info("Send SNS the message: {}", request);
         return new ReportVO(entity);
     }
 
@@ -128,7 +130,7 @@ public class ReportServiceImpl implements ReportService {
         pdfReport.setUpdatedTime(LocalDateTime.now());
         if (response.isFailed()) {
             pdfReport.setStatus(ReportStatus.FAILED);
-        } else{
+        } else {
             pdfReport.setStatus(ReportStatus.COMPLETED);
             pdfReport.setFileId(response.getFileId());
             pdfReport.setFileLocation(response.getFileLocation());
@@ -148,7 +150,7 @@ public class ReportServiceImpl implements ReportService {
         excelReport.setUpdatedTime(LocalDateTime.now());
         if (response.isFailed()) {
             excelReport.setStatus(ReportStatus.FAILED);
-        } else{
+        } else {
             excelReport.setStatus(ReportStatus.COMPLETED);
             excelReport.setFileId(response.getFileId());
             excelReport.setFileLocation(response.getFileLocation());
@@ -189,9 +191,29 @@ public class ReportServiceImpl implements ReportService {
             try {
                 return exchange.getBody().getInputStream();
             } catch (IOException e) {
-                log.error("Cannot download excel",e);
+                log.error("Cannot download excel", e);
             }
         }
         return null;
     }
+
+    public void deleteReportAndFiles(String reqId) {
+        ReportRequestEntity entity = reportRequestRepo.findById(reqId).orElseThrow(RequestNotFoundException::new);
+        deleteSyncPDFFile(entity.getPdfReport().getFileId());
+        deleteSyncExcelFile(entity.getExcelReport().getFileId());
+        reportRequestRepo.deleteById(reqId);
+    }
+
+    static private void deleteSyncPDFFile(String pdfFileId) {
+        log.info("Send Request to delete the pdf file: {}", pdfFileId);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.delete("http://localhost:9999/pdf/" + pdfFileId);
+    }
+
+    private void deleteSyncExcelFile(String excelFileId) {
+        log.info("Send Request to delete the excel file: {}", excelFileId);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.delete("http://localhost:8888/excel/" + excelFileId);
+    }
+
 }

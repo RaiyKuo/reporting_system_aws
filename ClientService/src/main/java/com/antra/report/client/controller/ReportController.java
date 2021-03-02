@@ -1,5 +1,6 @@
 package com.antra.report.client.controller;
 
+import com.antra.report.client.exception.RequestNotFoundException;
 import com.antra.report.client.pojo.FileType;
 import com.antra.report.client.pojo.reponse.ErrorResponse;
 import com.antra.report.client.pojo.reponse.GeneralResponse;
@@ -67,19 +68,30 @@ public class ReportController {
         response.setHeader("fileName", fileName);
         if (fis != null) {
             FileCopyUtils.copy(fis, response.getOutputStream());
-        } else{
+        } else {
             response.setStatus(500);
         }
         log.debug("Downloaded File:{}", reqId);
     }
 
-//   @DeleteMapping
+    @DeleteMapping("/report/{reqId}")
+    public ResponseEntity<GeneralResponse> deleteReportAndFiles(@PathVariable String reqId) {
+        log.info("Got Request to delete report along with its files: {}", reqId);
+        try {
+            reportService.deleteReportAndFiles(reqId);
+        } catch (RequestNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new GeneralResponse());
+    }
+
 //   @PutMapping
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GeneralResponse> handleValidationException(MethodArgumentNotValidException e) {
         log.warn("Input Data invalid: {}", e.getMessage());
-        String errorFields = e.getBindingResult().getFieldErrors().stream().map(fe -> String.join(" ",fe.getField(),fe.getDefaultMessage())).collect(Collectors.joining(", "));
+        String errorFields = e.getBindingResult().getFieldErrors().stream().map(fe -> String.join(" ", fe.getField(), fe.getDefaultMessage())).collect(Collectors.joining(", "));
         return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST, errorFields), HttpStatus.BAD_REQUEST);
     }
 }

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,24 +43,36 @@ public class PDFServiceImpl implements PDFService {
         file.setDescription(request.getDescription());
         file.setGeneratedTime(LocalDateTime.now());
 
-        PDFFile generatedFile= generator.generate(request);
+        PDFFile generatedFile = generator.generate(request);
 
         File temp = new File(generatedFile.getFileLocation());
         log.debug("Upload temp file to s3 {}", generatedFile.getFileLocation());
-        s3Client.putObject(s3Bucket,file.getId(),temp);
+        s3Client.putObject(s3Bucket, file.getId(), temp);
         log.debug("Uploaded");
 
-        file.setFileLocation(String.join("/",s3Bucket,file.getId()));
+        file.setFileLocation(String.join("/", s3Bucket, file.getId()));
         file.setFileSize(generatedFile.getFileSize());
         file.setFileName(generatedFile.getFileName());
         repository.save(file);
 
         log.debug("clear tem file {}", file.getFileLocation());
-        if(temp.delete()){
+        if (temp.delete()) {
             log.debug("cleared");
         }
 
         return file;
+    }
+
+
+    @Override
+    public PDFFile deleteFile(String id) throws FileNotFoundException {
+        Optional<PDFFile> optional = repository.findById(id);
+        if (optional.isEmpty()) {
+            throw new FileNotFoundException();
+        }
+        s3Client.deleteObject(s3Bucket, id);
+        repository.deleteById(id);
+        return optional.get();
     }
 
 }

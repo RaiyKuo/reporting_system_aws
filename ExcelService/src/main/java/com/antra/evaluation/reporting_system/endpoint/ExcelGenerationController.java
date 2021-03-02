@@ -103,7 +103,13 @@ public class ExcelGenerationController {
     public ResponseEntity<ExcelResponse> deleteExcel(@PathVariable String id) throws FileNotFoundException {
         log.debug("Got Request to Delete File:{}", id);
         var response = new ExcelResponse();
-        ExcelFile fileDeleted = excelService.deleteFile(id);
+        ExcelFile fileDeleted = null;
+        try {
+            fileDeleted = excelService.deleteFile(id);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
         BeanUtils.copyProperties(fileDeleted, response);
         response.setFileLocation(this.generateFileDownloadLink(fileDeleted.getFileId()));
         log.debug("File Deleted:{}", fileDeleted);

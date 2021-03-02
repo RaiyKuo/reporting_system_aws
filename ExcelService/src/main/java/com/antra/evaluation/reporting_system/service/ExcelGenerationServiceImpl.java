@@ -103,7 +103,7 @@ public class ExcelGenerationServiceImpl implements ExcelGenerationService {
 
         File currDir = new File(".");
         String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + data.getFileId() +".xlsx";
+        String fileLocation = path.substring(0, path.length() - 1) + data.getFileId() + ".xlsx";
 
         FileOutputStream outputStream = new FileOutputStream(fileLocation);
         workbook.write(outputStream);
@@ -112,6 +112,10 @@ public class ExcelGenerationServiceImpl implements ExcelGenerationService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        workbook.close();
+        outputStream.close();           // Missing in original code.
+
         return new File(fileLocation);
     }
 
