@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class PDFGenerationControllerTest {
 
     PDFGenerationController pdfGenerationController;
-    ResponseEntity<PDFResponse> responseResponseEntity;
+    ResponseEntity<PDFResponse> responseEntity;
 
     static PDFRequest pdfRequest;
 
-    static String UUID_SAMPLE = "Req-"+ "abd31def-00ba-45f0-a06f-a8b6f37a4a21";
+    static String UUID_SAMPLE = "Req-" + "abd31def-00ba-45f0-a06f-a8b6f37a4a21";
 
     @Autowired
     public PDFGenerationControllerTest(PDFGenerationController pdfGenerationController) {
@@ -30,11 +29,11 @@ class PDFGenerationControllerTest {
     }
 
     @BeforeAll
-    static void generatePDFRequestInput(){
+    static void generatePDFRequestInput() {
         pdfRequest = new PDFRequest();
         pdfRequest.setReqId(UUID_SAMPLE);
-        pdfRequest.setHeaders(List.of("Id","Name","Age"));
-        pdfRequest.setData(List.of(List.of("1","Dd","23"),List.of("2","AJ","32")));
+        pdfRequest.setHeaders(List.of("Id", "Name", "Age"));
+        pdfRequest.setData(List.of(List.of("1", "Dd", "23"), List.of("2", "AJ", "32")));
         pdfRequest.setDescription("This is a test");
         pdfRequest.setSubmitter("class PDFGenerationControllerTest");
     }
@@ -44,13 +43,13 @@ class PDFGenerationControllerTest {
      */
     @Test
     void createPDF() {
-        responseResponseEntity = pdfGenerationController.createPDF(pdfRequest);
-        assertEquals(HttpStatus.OK, responseResponseEntity.getStatusCode());
-        PDFResponse response = responseResponseEntity.getBody();
+        responseEntity = pdfGenerationController.createPDF(pdfRequest);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        PDFResponse response = responseEntity.getBody();
         assertNotNull(response);
         assertAll("Check response is correct",
-                ()->assertFalse(response.isFailed()),
-                ()->assertEquals(UUID_SAMPLE, response.getReqId())
+                () -> assertFalse(response.isFailed()),
+                () -> assertEquals(UUID_SAMPLE, response.getReqId())
         );
         System.out.println(response.getFileLocation());
     }
