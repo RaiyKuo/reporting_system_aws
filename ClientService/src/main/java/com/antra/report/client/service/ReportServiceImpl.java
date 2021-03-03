@@ -171,30 +171,15 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public InputStream getFileBodyByReqId(String reqId, FileType type) {
         ReportRequestEntity entity = reportRequestRepo.findById(reqId).orElseThrow(RequestNotFoundException::new);
-        if (type == FileType.PDF) {
-            String fileLocation = entity.getPdfReport().getFileLocation(); // this location is s3 "bucket/key"
-            String bucket = fileLocation.split("/")[0];
-            String key = fileLocation.split("/")[1];
-            return s3Client.getObject(bucket, key).getObjectContent();
-        } else if (type == FileType.EXCEL) {
-            String fileId = entity.getExcelReport().getFileId();
-//            String fileLocation = entity.getExcelReport().getFileLocation();
-//            try {
-//                return new FileInputStream(fileLocation);// this location is in local, definitely sucks
-//            } catch (FileNotFoundException e) {
-//                log.error("No file found", e);
-//            }
-            RestTemplate restTemplate = new RestTemplate();
-//            InputStream is = restTemplate.execute(, HttpMethod.GET, null, ClientHttpResponse::getBody, fileId);
-            ResponseEntity<Resource> exchange = restTemplate.exchange("http://localhost:8888/excel/{id}/content",
-                    HttpMethod.GET, null, Resource.class, fileId);
-            try {
-                return exchange.getBody().getInputStream();
-            } catch (IOException e) {
-                log.error("Cannot download excel", e);
-            }
-        }
-        return null;
+        String fileLocation = switch (type) {
+            case PDF:
+                yield entity.getPdfReport().getFileLocation(); // this location is s3 "bucket/key"
+            case EXCEL:
+                yield entity.getExcelReport().getFileLocation();
+        };
+        String bucket = fileLocation.split("/")[0];
+        String key = fileLocation.split("/")[1];
+        return s3Client.getObject(bucket, key).getObjectContent();
     }
 
     public void deleteReportAndFiles(String reqId) {

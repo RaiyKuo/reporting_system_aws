@@ -7,6 +7,8 @@ import com.antra.evaluation.reporting_system.pojo.report.ExcelFile;
 import com.antra.evaluation.reporting_system.service.ExcelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.stereotype.Component;
@@ -20,12 +22,13 @@ public class ExcelRequestQueueListener {
 
     private final ExcelService excelService;
 
-    public ExcelRequestQueueListener(QueueMessagingTemplate queueMessagingTemplate, ExcelService excelService) {
+    @Autowired
+    public ExcelRequestQueueListener(QueueMessagingTemplate queueMessagingTemplate, @Qualifier("ExcelServiceImpl2") ExcelService excelService) {
         this.queueMessagingTemplate = queueMessagingTemplate;
         this.excelService = excelService;
     }
 
-   // @SqsListener("PDF_Request_Queue")
+    // @SqsListener("PDF_Request_Queue")
     public void queueListener(ExcelRequest request) {
 //        log.info("Get request: {}", request);
         ExcelFile file = null;
@@ -60,8 +63,8 @@ public class ExcelRequestQueueListener {
 }
 /**
  * {
- *   "description":"Student Math Course Report",
- *   "headers":["Student #","Name","Class","Score"],
- *   "submitter":"Mrs. York1234"
+ * "description":"Student Math Course Report",
+ * "headers":["Student #","Name","Class","Score"],
+ * "submitter":"Mrs. York1234"
  * }
  **/
