@@ -199,9 +199,9 @@ public class ReportServiceImpl implements ReportService {
 
     public void deleteReportAndFiles(String reqId) {
         ReportRequestEntity entity = reportRequestRepo.findById(reqId).orElseThrow(RequestNotFoundException::new);
+        reportRequestRepo.deleteById(reqId);
         deleteSyncPDFFile(entity.getPdfReport().getFileId());
         deleteSyncExcelFile(entity.getExcelReport().getFileId());
-        reportRequestRepo.deleteById(reqId);
     }
 
     static private void deleteSyncPDFFile(String pdfFileId) {
