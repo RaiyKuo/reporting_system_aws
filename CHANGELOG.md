@@ -1,15 +1,30 @@
-##  (2021-03-02)
+# (2021-03-02)
 
-* test(PDFService): Add Controller Endpoint createPDF method Test 5b8d9ad
-* chore(Configs): Move sqs queue location string into properties files ee9b318
-* docs(git): Update CHANGELOG.md based on commit messages fc58920
-* AWS credentials configured/SQS, SNS, Lambda setup. All works now. 022cf70
-* update .gitignore ecb8644
+### chore
 
+* **Configs:** Move sqs queue location string into properties files ee9b318
 
-### BREAKING CHANGE
+### Documentation
 
-* No
-* No
+* **git:** Update CHANGELOG.md based on commit messages fc58920
+
+### Features
+
+* **Global:** Add feature to delete report and files 4d9fcc4
+
+### Tests
+
+* **ExcelService:** Add Controller Endpoint createExcel method Test 3cad061
+
+### BREAKING CHANGES
+
+* **Global:** No
+* **ExcelService:** No
+
+[skip ci]
+
+* **Configs:** No
+* **git:** No
+
 
 
