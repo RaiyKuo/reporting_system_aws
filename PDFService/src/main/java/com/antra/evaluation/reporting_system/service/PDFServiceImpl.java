@@ -38,22 +38,20 @@ public class PDFServiceImpl implements PDFService {
     @Override
     public PDFFile createPDF(final PDFRequest request) {
         PDFFile file = generator.generate(request);
+        file.setId("File-" + UUID.randomUUID().toString());
         file.setSubmitter(request.getSubmitter());
         file.setDescription(request.getDescription());
         file.setGeneratedTime(LocalDateTime.now());
-
-        file.setId(repository.save(file).getId());
-
         File temp = new File(file.getFileLocation());
         log.debug("Upload temp file to s3 {}", file.getFileLocation());
         try {
             s3Client.putObject(s3Bucket, file.getId(), temp);
             log.debug("Uploaded");
             file.setFileLocation(String.join("/", s3Bucket, file.getId()));
+            repository.save(file);
         } catch (Exception e) {
             log.error("Uploading to s3 failed.");
             e.printStackTrace();
-            repository.delete(file);
             file = null;
         }
 

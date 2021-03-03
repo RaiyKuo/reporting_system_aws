@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @Entity(name = "pdf_files")
 public class PDFFile {
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "system-uuid")
-    @GeneratedValue(generator = "system-uuid")
     private String id;
     private String description;
     private String submitter;

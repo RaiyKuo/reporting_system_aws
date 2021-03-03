@@ -1,15 +1,19 @@
 package com.antra.evaluation.reporting_system.pojo.report;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+@Entity(name = "excel_files")
 public class ExcelFile {
+    @Id
     private String fileId;
+    private String description;
+    private String submitter;
+    private LocalDateTime generatedTime;
     private String fileName;
     private String fileLocation;
-    private String submitter;
     private Long fileSize;
-    private String description;
-    private LocalDateTime generatedTime;
 
     public Long getFileSize() {
         return fileSize;

@@ -35,7 +35,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public InputStream getExcelBodyById(String id) throws FileNotFoundException {
-        Optional<ExcelFile> fileInfo = excelRepository.getFileById(id);
+        Optional<ExcelFile> fileInfo = excelRepository.findById(id);
         return new FileInputStream(fileInfo.orElseThrow(FileNotFoundException::new).getFileLocation());
     }
 
@@ -47,9 +47,9 @@ public class ExcelServiceImpl implements ExcelService {
         data.setTitle(request.getDescription());
         data.setFileId(fileInfo.getFileId());
         data.setSubmitter(fileInfo.getSubmitter());
-        if(multisheet){
+        if (multisheet) {
             data.setSheets(generateMultiSheet(request));
-        }else {
+        } else {
             data.setSheets(generateSheet(request));
         }
         try {
@@ -64,22 +64,23 @@ public class ExcelServiceImpl implements ExcelService {
 //            log.error("Error in generateFile()", e);
             throw new FileGenerationException(e);
         }
-        excelRepository.saveFile(fileInfo);
+        excelRepository.save(fileInfo);
         log.debug("Excel File Generated : {}", fileInfo);
         return fileInfo;
     }
 
     @Override
     public List<ExcelFile> getExcelList() {
-        return excelRepository.getFiles();
+        return excelRepository.findAll();
     }
 
     @Override
     public ExcelFile deleteFile(String id) throws FileNotFoundException {
-        ExcelFile excelFile = excelRepository.deleteFile(id);
-        if (excelFile == null) {
+        Optional<ExcelFile> optionalExcelFile = excelRepository.findById(id);
+        if (optionalExcelFile.isEmpty()) {
             throw new FileNotFoundException();
         }
+        ExcelFile excelFile = optionalExcelFile.get();
         File file = new File(excelFile.getFileLocation());
         file.delete();
         return excelFile;
@@ -94,13 +95,14 @@ public class ExcelServiceImpl implements ExcelService {
         sheets.add(sheet);
         return sheets;
     }
+
     private List<ExcelDataSheet> generateMultiSheet(ExcelRequest request) {
         List<ExcelDataSheet> sheets = new ArrayList<>();
         int index = request.getHeaders().indexOf(((MultiSheetExcelRequest) request).getSplitBy());
-        Map<String, List<List<String>>> splittedData = request.getData().stream().collect(Collectors.groupingBy(row -> (String)row.get(index)));
+        Map<String, List<List<String>>> splittedData = request.getData().stream().collect(Collectors.groupingBy(row -> (String) row.get(index)));
         List<ExcelDataHeader> headers = request.getHeaders().stream().map(ExcelDataHeader::new).collect(Collectors.toList());
         splittedData.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(
-                entry ->{
+                entry -> {
                     ExcelDataSheet sheet = new ExcelDataSheet();
                     sheet.setHeaders(headers);
                     sheet.setDataRows(entry.getValue().stream().map(listOfString -> {
