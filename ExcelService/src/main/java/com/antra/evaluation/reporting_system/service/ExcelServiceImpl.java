@@ -11,14 +11,12 @@ import com.antra.evaluation.reporting_system.repo.ExcelRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
 public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelServiceImpl.class);
@@ -81,8 +79,13 @@ public class ExcelServiceImpl implements ExcelService {
             throw new FileNotFoundException();
         }
         ExcelFile excelFile = optionalExcelFile.get();
-        File file = new File(excelFile.getFileLocation());
-        file.delete();
+        try {
+            File file = new File(excelFile.getFileLocation());
+            file.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        excelRepository.deleteById(id);
         return excelFile;
     }
 

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
@@ -33,10 +34,11 @@ public class ExcelGenerationController {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelGenerationController.class);
     private static final String DOWNLOAD_API_URI = "/excel/{id}/content";
+
     ExcelService excelService;
 
     @Autowired
-    public ExcelGenerationController(ExcelService excelService) {
+    public ExcelGenerationController(@Qualifier("ExcelServiceImpl2") ExcelService excelService) {
         this.excelService = excelService;
     }
 
