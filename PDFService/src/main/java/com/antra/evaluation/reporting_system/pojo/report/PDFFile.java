@@ -1,18 +1,25 @@
 package com.antra.evaluation.reporting_system.pojo.report;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Document
+@Entity(name = "pdf_files")
 public class PDFFile {
+    @Id
+    @GenericGenerator(strategy = "uuid2", name = "system-uuid")
+    @GeneratedValue(generator = "system-uuid")
     private String id;
+    private String description;
+    private String submitter;
+    private LocalDateTime generatedTime;
     private String fileName;
     private String fileLocation;
-    private String submitter;
     private Long fileSize;
-    private String description;
-    private LocalDateTime generatedTime;
 
     public String getId() {
         return id;

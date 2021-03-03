@@ -1,8 +1,5 @@
 package com.antra.evaluation.reporting_system.pojo.api;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document
 public class PDFResponse {
 
     private String fileId;

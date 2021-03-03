@@ -37,27 +37,30 @@ public class PDFServiceImpl implements PDFService {
 
     @Override
     public PDFFile createPDF(final PDFRequest request) {
-        PDFFile file = new PDFFile();
-        file.setId("File-" + UUID.randomUUID().toString());
+        PDFFile file = generator.generate(request);
         file.setSubmitter(request.getSubmitter());
         file.setDescription(request.getDescription());
         file.setGeneratedTime(LocalDateTime.now());
 
-        PDFFile generatedFile = generator.generate(request);
+        file.setId(repository.save(file).getId());
 
-        File temp = new File(generatedFile.getFileLocation());
-        log.debug("Upload temp file to s3 {}", generatedFile.getFileLocation());
-        s3Client.putObject(s3Bucket, file.getId(), temp);
-        log.debug("Uploaded");
+        File temp = new File(file.getFileLocation());
+        log.debug("Upload temp file to s3 {}", file.getFileLocation());
+        try {
+            s3Client.putObject(s3Bucket, file.getId(), temp);
+            log.debug("Uploaded");
+            file.setFileLocation(String.join("/", s3Bucket, file.getId()));
+        } catch (Exception e) {
+            log.error("Uploading to s3 failed.");
+            e.printStackTrace();
+            repository.delete(file);
+            file = null;
+        }
 
-        file.setFileLocation(String.join("/", s3Bucket, file.getId()));
-        file.setFileSize(generatedFile.getFileSize());
-        file.setFileName(generatedFile.getFileName());
-        repository.save(file);
-
-        log.debug("clear tem file {}", file.getFileLocation());
         if (temp.delete()) {
-            log.debug("cleared");
+            log.debug("tmp file cleared.");
+        } else {
+            log.warn("tmp file deletion failed.");
         }
 
         return file;

@@ -1,5 +1,5 @@
 {
-  "description": "Student Math Course Report",
+  "description": "This is automatic test.",
   "headers": [
     "Student #",
     "Name",
@@ -8,29 +8,17 @@
   ],
   "data": [
     [
-      "s-008",
-      "Sarah",
-      "Class-A",
-      "B"
+      "s-001",
+      "Hung-Jui",
+      "Java",
+      "A"
     ],
     [
-      "s-009",
-      "Thomas",
-      "Class-A",
-      "B-"
-    ],
-    [
-      "s-010",
-      "Joseph",
-      "Class-B",
-      "A-"
-    ],
-    [
-      "s-011",
-      "Charles",
-      "Class-C",
-      "A123123"
+      "s-002",
+      "Kuo",
+      "Spring",
+      "A"
     ]
   ],
-  "submitter": "Mrs. York"
+  "submitter": "ReportControllerTest"
 }

@@ -78,6 +78,9 @@ function showDelete(reqId) {
             success: function () {
                 loadAll();
             },
+            error: function () {
+                loadAll();
+            }
         });
     }
 }
