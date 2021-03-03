@@ -40,6 +40,7 @@ public class ExcelServiceImpl2 extends ExcelServiceImpl {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        excelFile.setFileLocation(String.join("/", s3Bucket, excelFile.getFileId()));
         return excelFile;
     }
 
