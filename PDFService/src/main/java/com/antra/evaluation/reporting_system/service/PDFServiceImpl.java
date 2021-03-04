@@ -1,5 +1,9 @@
 package com.antra.evaluation.reporting_system.service;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.s3.AmazonS3;
 import com.antra.evaluation.reporting_system.pojo.api.PDFRequest;
 import com.antra.evaluation.reporting_system.pojo.report.PDFFile;
@@ -76,4 +80,28 @@ public class PDFServiceImpl implements PDFService {
         return optional.get();
     }
 
+    /**
+     * TODO: For testing purpose only, need to be removed.
+     */
+    public static void main(String[] args) {
+
+        String dynamoDB_endpoint = "dynamodb.us-east-1.amazonaws.com";
+        String aws_region = "us-east-1";
+
+        PDFFile file = new PDFFile();
+        file.setId("a");
+        file.setDescription("a");
+        file.setSubmitter("a");
+        file.setGeneratedTime(LocalDateTime.now());
+        file.setFileSize(1L);
+        file.setFileName("a");
+        file.setFileLocation("a");
+
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+                        dynamoDB_endpoint, aws_region))
+                .build();
+        DynamoDBMapper mapper = new DynamoDBMapper(client);
+        mapper.save(file);
+    }
 }

@@ -1,19 +1,19 @@
 package com.antra.evaluation.reporting_system.pojo.report;
 
 
-import org.hibernate.annotations.GenericGenerator;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Entity(name = "pdf_files")
+@DynamoDBTable(tableName = "pdf_files")
 public class PDFFile {
-    @Id
+
+    @DynamoDBHashKey
     private String id;
     private String description;
     private String submitter;
+    @DynamoDBTypeConverted(converter = DynamoDbConverter.LocalDateTimeToString.class)
+    // Convert LocalDateTime to String in DynamoDB
     private LocalDateTime generatedTime;
     private String fileName;
     private String fileLocation;
@@ -87,4 +87,6 @@ public class PDFFile {
                 ", generatedTime=" + generatedTime +
                 '}';
     }
+
+
 }
