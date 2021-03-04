@@ -2,6 +2,7 @@ package com.antra.evaluation.reporting_system.pojo.report;
 
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.antra.evaluation.reporting_system.repo.DynamoDbConverter;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +12,10 @@ public class PDFFile {
     @DynamoDBHashKey
     private String id;
     private String description;
-    private String submitter;
     @DynamoDBTypeConverted(converter = DynamoDbConverter.LocalDateTimeToString.class)
     // Convert LocalDateTime to String in DynamoDB
     private LocalDateTime generatedTime;
+    private String submitter;
     private String fileName;
     private String fileLocation;
     private Long fileSize;

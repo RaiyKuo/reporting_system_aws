@@ -1,8 +1,9 @@
 package com.antra.evaluation.reporting_system.repo;
 
 import com.antra.evaluation.reporting_system.pojo.report.ExcelFile;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.springframework.data.repository.CrudRepository;
 
-
-public interface ExcelRepository extends JpaRepository<ExcelFile, String> {
+@EnableScan
+public interface ExcelRepository extends CrudRepository<ExcelFile, String> {
 }

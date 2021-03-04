@@ -16,6 +16,7 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class ExcelServiceImpl implements ExcelService {
 
@@ -69,7 +70,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public List<ExcelFile> getExcelList() {
-        return excelRepository.findAll();
+        Iterable<ExcelFile> optionalExcelFile = excelRepository.findAll();
+        return StreamSupport.stream(optionalExcelFile.spliterator(), false).collect(Collectors.toList());
     }
 
     @Override
