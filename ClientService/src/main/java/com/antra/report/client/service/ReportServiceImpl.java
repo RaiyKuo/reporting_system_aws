@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -34,6 +35,7 @@ public class ReportServiceImpl implements ReportService {
     private final AmazonS3 s3Client;
     private final EmailService emailService;
     private final EndpointConfig endpoints;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
 
     @Autowired
     public ReportServiceImpl(ReportRequestRepo reportRequestRepo, SNSService snsService, AmazonS3 s3Client, EmailService emailService, EndpointConfig endpoints) {
@@ -82,10 +84,20 @@ public class ReportServiceImpl implements ReportService {
         return new ReportVO(entity);
     }
 
-    //TODO:Change to parallel process using Threadpool? CompletableFuture?
     private void sendDirectRequests(ReportRequest request) {
-        sendOneDirectRequest(request, new ExcelResponse(), FileType.EXCEL);
-        sendOneDirectRequest(request, new PDFResponse(), FileType.PDF);
+        CompletableFuture<?> excelFuture = CompletableFuture.runAsync(
+                () -> sendOneDirectRequest(request, new ExcelResponse(), FileType.EXCEL), executorService);
+        CompletableFuture<?> pdfFuture = CompletableFuture.runAsync(
+                () -> sendOneDirectRequest(request, new PDFResponse(), FileType.PDF), executorService);
+        try { // Despite there are no results will be returned (void methods), but we have to make sure the report
+            // will only be generated after the threading tasks were done, otherwise the response status will show "PENDING".
+            excelFuture.get();
+            pdfFuture.get();
+        } catch (InterruptedException e) {
+            log.warn("One or more thread task got interrupted.", e);
+        } catch (ExecutionException e) {
+            log.warn("One or more thread failed", e);
+        }
     }
 
     private void sendOneDirectRequest(ReportRequest request, FileResponse fileResponse, FileType fileType) {
