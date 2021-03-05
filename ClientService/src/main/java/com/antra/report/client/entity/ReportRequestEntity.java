@@ -1,22 +1,26 @@
 package com.antra.report.client.entity;
 
-import javax.persistence.*;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.antra.report.client.repository.DynamoDbConverter;
+
 import java.time.LocalDateTime;
 
-@Entity(name="report_request")
+@DynamoDBTable(tableName = "report_request")
 public class ReportRequestEntity {
-    @Id
+    @DynamoDBHashKey
     private String reqId;
     private String submitter;
     private String description;
+    @DynamoDBTypeConverted(converter = DynamoDbConverter.LocalDateTimeToString.class)
     private LocalDateTime createdTime;
+    @DynamoDBTypeConverted(converter = DynamoDbConverter.LocalDateTimeToString.class)
     private LocalDateTime updatedTime;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER) // default is already eager here
-    @JoinColumn(name="pdf_report_id")
+    // OneToOne relationship cannot be directly applied in DynamoDB; so assign these nested objects as DynamoDBDocuments.
+    // A viable solution but maybe not a decent solution.
     private PDFReportEntity pdfReport;
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER) // default is already eager here
-    @JoinColumn(name="excel_report_id")
     private ExcelReportEntity excelReport;
 
     public PDFReportEntity getPdfReport() {

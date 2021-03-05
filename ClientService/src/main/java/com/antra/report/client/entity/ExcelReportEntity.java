@@ -1,8 +1,8 @@
 package com.antra.report.client.entity;
 
-import javax.persistence.Entity;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 
-@Entity(name="excel_report")
-public class ExcelReportEntity extends BaseReportEntity{
+@DynamoDBDocument
+public class ExcelReportEntity extends BaseReportEntity {
 
 }

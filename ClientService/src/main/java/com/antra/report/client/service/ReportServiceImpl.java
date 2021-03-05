@@ -24,12 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -165,7 +165,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional(readOnly = true)
     public List<ReportVO> getReportList() {
-        return reportRequestRepo.findAll().stream().map(ReportVO::new).collect(Collectors.toList());
+        return StreamSupport.stream(reportRequestRepo.findAll().spliterator(), false).map(ReportVO::new).collect(Collectors.toList());
     }
 
     @Override

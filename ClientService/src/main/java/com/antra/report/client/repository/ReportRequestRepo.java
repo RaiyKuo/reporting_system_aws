@@ -1,7 +1,9 @@
 package com.antra.report.client.repository;
 
 import com.antra.report.client.entity.ReportRequestEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.springframework.data.repository.CrudRepository;
 
-public interface ReportRequestRepo extends JpaRepository<ReportRequestEntity, String> {
+@EnableScan
+public interface ReportRequestRepo extends CrudRepository<ReportRequestEntity, String> {
 }

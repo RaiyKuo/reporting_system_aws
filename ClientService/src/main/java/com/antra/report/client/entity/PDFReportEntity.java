@@ -1,8 +1,8 @@
 package com.antra.report.client.entity;
 
-import javax.persistence.Entity;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 
-@Entity(name="pdf_report")
+@DynamoDBDocument
 public class PDFReportEntity extends BaseReportEntity{
 
 }
