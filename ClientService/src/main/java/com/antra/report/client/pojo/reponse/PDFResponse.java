@@ -1,6 +1,6 @@
 package com.antra.report.client.pojo.reponse;
 
-public class PDFResponse {
+public class PDFResponse implements FileResponse {
     private String fileId;
     private String reqId;
     private String fileLocation;

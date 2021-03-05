@@ -2,7 +2,7 @@ package com.antra.report.client.pojo.reponse;
 
 import java.time.LocalDateTime;
 
-public class ExcelResponse {
+public class ExcelResponse implements FileResponse {
     private String reqId;
     private String fileId;
     private String fileLocation;

@@ -13,9 +13,7 @@ public interface ReportService {
 
     ReportVO generateReportsAsync(ReportRequest request);
 
-    void updateAsyncPDFReport(SqsResponse response);
-
-    void updateAsyncExcelReport(SqsResponse response);
+    void updateAsyncFileReport(SqsResponse response, FileType fileType);
 
     List<ReportVO> getReportList();
 

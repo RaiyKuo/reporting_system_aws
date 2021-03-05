@@ -1,5 +1,6 @@
 package com.antra.report.client.handler;
 
+import com.antra.report.client.pojo.FileType;
 import com.antra.report.client.pojo.reponse.SqsResponse;
 import com.antra.report.client.service.ReportService;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ public class ReportSQSListener {
 
     private static final Logger log = LoggerFactory.getLogger(ReportSQSListener.class);
 
-    private ReportService reportService;
+    private final ReportService reportService;
 
     public ReportSQSListener(ReportService reportService) {
         this.reportService = reportService;
@@ -22,14 +23,14 @@ public class ReportSQSListener {
     public void responseQueueListenerPdf(SqsResponse response) {
         log.info("Get response from sqs : {}", response);
         //queueListener(request.getPdfRequest());
-        reportService.updateAsyncPDFReport(response);
+        reportService.updateAsyncFileReport(response, FileType.PDF);
     }
 
     @SqsListener("${app.aws.sqs.excel_queue}")
     public void responseQueueListenerExcel(SqsResponse response) {
         log.info("Get response from sqs : {}", response);
         //queueListener(request.getPdfRequest());
-        reportService.updateAsyncExcelReport(response);
+        reportService.updateAsyncFileReport(response, FileType.EXCEL);
     }
 
 //    @SqsListener(value = "Excel_Response_Queue", deletionPolicy = SqsMessageDeletionPolicy.NEVER)
