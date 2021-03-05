@@ -67,7 +67,7 @@ public class ExcelGenerationController {
     public ResponseEntity<ExcelResponse> createMultiSheetExcel(@RequestBody @Validated MultiSheetExcelRequest request) {
         log.debug("Got Request to Create Multi-Sheet Excel:{}", request);
         //Double check if the header has splitBy field.
-        if(!request.getHeaders().contains(request.getSplitBy())){
+        if (!request.getHeaders().contains(request.getSplitBy())) {
             throw new InvalidParameterException("No such header for splitting the sheets");
         }
         ExcelFile fileInfo = excelService.generateFile(request, true);
@@ -96,7 +96,7 @@ public class ExcelGenerationController {
         log.debug("Got Request to Download File:{}", id);
         InputStream fis = excelService.getExcelBodyById(id);
         response.setHeader("Content-Type", "application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=\"name_of_excel_file.xls\""); // TODO: File name cannot be hardcoded here
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"{%s}.xls\"", id));
         FileCopyUtils.copy(fis, response.getOutputStream());
         log.debug("Downloaded File:{}", id);
     }
