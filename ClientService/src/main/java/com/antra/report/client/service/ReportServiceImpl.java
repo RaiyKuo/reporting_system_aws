@@ -170,8 +170,18 @@ public class ReportServiceImpl implements ReportService {
 
     public void deleteReportAndFiles(String reqId) {
         ReportRequestEntity entity = reportRequestRepo.findById(reqId).orElseThrow(RequestNotFoundException::new);
-        deleteSyncFile(entity.getExcelReport().getFileId(), FileType.EXCEL);
-        deleteSyncFile(entity.getPdfReport().getFileId(), FileType.PDF);
+        CompletableFuture<?> excelFuture = CompletableFuture.runAsync(
+                () -> deleteSyncFile(entity.getExcelReport().getFileId(), FileType.EXCEL), executorService);
+        CompletableFuture<?> pdfFuture = CompletableFuture.runAsync(
+                () -> deleteSyncFile(entity.getPdfReport().getFileId(), FileType.PDF), executorService);
+        try {
+            excelFuture.get();
+            pdfFuture.get();
+        } catch (InterruptedException e) {
+            log.warn("One or more thread task got interrupted.", e);
+        } catch (ExecutionException e) {
+            log.warn("One or more thread failed", e);
+        }
         reportRequestRepo.deleteById(reqId);
     }
 
