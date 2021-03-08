@@ -38,7 +38,7 @@ public class PDFGenerator {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itemList);
 
         try {
-            File jaspFile = ResourceUtils.getFile("classpath:Coffee_Landscape.jasper");
+            File jaspFile = ResourceUtils.getFile("classpath:Coffee_Landscape.jasper");  //TODO: not working in docker
             JasperPrint jprint = JasperFillManager.fillReport(jaspFile.getAbsolutePath(), parameters, dataSource);
             File temp = File.createTempFile(request.getSubmitter(),"_tmp.pdf");
             JasperExportManager.exportReportToPdfFile(jprint, temp.getAbsolutePath());

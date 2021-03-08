@@ -1,0 +1,14 @@
+version: '2.1'
+services:
+  client_service:
+    image: client_service
+    ports:
+      - 8080:8080          # TODO: Port mapping seems dosen't work, need fix it.
+  excelservice:
+    image: excel_service
+    ports:
+      - 8888:8888
+  pdfservice:
+    image: pdfs_ervice
+    ports:
+      - 9999:9999
