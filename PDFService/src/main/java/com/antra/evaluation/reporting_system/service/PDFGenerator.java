@@ -10,10 +10,13 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +41,16 @@ public class PDFGenerator {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itemList);
 
         try {
-            File jaspFile = ResourceUtils.getFile("classpath:Coffee_Landscape.jasper");  //TODO: not working in docker
-            JasperPrint jprint = JasperFillManager.fillReport(jaspFile.getAbsolutePath(), parameters, dataSource);
-            File temp = File.createTempFile(request.getSubmitter(),"_tmp.pdf");
+            JasperPrint jprint;
+            try { // When running in jar.
+                Resource resource = new ClassPathResource("classpath:Coffee_Landscape.jasper");
+                jprint = JasperFillManager.fillReport(resource.getInputStream(), parameters, dataSource);
+            } catch (FileNotFoundException e) {   // When running in plain java.
+                File jaspFile = ResourceUtils.getFile("classpath:Coffee_Landscape.jasper");
+                jprint = JasperFillManager.fillReport(jaspFile.getAbsolutePath(), parameters, dataSource);
+            }
+
+            File temp = File.createTempFile(request.getSubmitter(), "_tmp.pdf");
             JasperExportManager.exportReportToPdfFile(jprint, temp.getAbsolutePath());
             PDFFile generatedFile = new PDFFile();
             generatedFile.setFileLocation(temp.getAbsolutePath());

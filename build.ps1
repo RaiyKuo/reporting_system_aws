@@ -1,4 +1,4 @@
-# This is a PowerShell script
+# This is a PowerShell script to build all three services into docker images.
 cd "D:\Coding\Java\reporting_system_aws"
 
 # Copy AWS credentials into Dockerfile folder for building
