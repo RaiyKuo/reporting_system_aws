@@ -186,7 +186,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void deleteSyncFile(String fileId, FileType fileType) {
-        log.info("Send Request to delete the {} file: {}", fileType.toString(), fileId);
+        log.info("Send Sync Request to delete the {} file: {}", fileType.toString(), fileId);
         RestTemplate restTemplate = new RestTemplate();
         try {
             restTemplate.delete(endpoints.getFileService(fileType) + "/" + fileId);
@@ -194,4 +194,5 @@ public class ReportServiceImpl implements ReportService {
             log.error(fileType.toString() + " file deletion failed", e);
         }
     }
+    //TODO: Implement Async deletion.
 }
