@@ -9,6 +9,6 @@ services:
     ports:
       - 8888:8888
   pdfservice:
-    image: pdfs_ervice
+    image: pdf_service
     ports:
       - 9999:9999
