@@ -3,7 +3,7 @@ services:
   client_service:
     image: client_service
     ports:
-      - 8080:8080          # TODO: Port mapping seems dosen't work, need fix it.
+      - 8080:8080          # TODO: Port mapping seems doesn't work.
   excelservice:
     image: excel_service
     ports:
