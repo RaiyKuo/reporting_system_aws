@@ -3,12 +3,12 @@ services:
   client_service:
     image: client_service
     ports:
-      - 8080:8080          # TODO: Port mapping seems doesn't work.
+      - 8080:8080
   excelservice:
     image: excel_service
     ports:
       - 8888:8888
   pdfservice:
-    image: pdfs_ervice
+    image: pdf_service
     ports:
       - 9999:9999
