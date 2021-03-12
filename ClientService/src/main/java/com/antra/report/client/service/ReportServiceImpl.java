@@ -36,14 +36,17 @@ public class ReportServiceImpl implements ReportService {
     private final EmailService emailService;
     private final EndpointConfig endpoints;
     private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+    private RestTemplate restTemplate;
 
     @Autowired
-    public ReportServiceImpl(ReportRequestRepo reportRequestRepo, SNSService snsService, AmazonS3 s3Client, EmailService emailService, EndpointConfig endpoints) {
+    public ReportServiceImpl(ReportRequestRepo reportRequestRepo, SNSService snsService, RestTemplate restTemplate,
+                             AmazonS3 s3Client, EmailService emailService, EndpointConfig endpoints) {
         this.reportRequestRepo = reportRequestRepo;
         this.snsService = snsService;
         this.s3Client = s3Client;
         this.emailService = emailService;
         this.endpoints = endpoints;
+        this.restTemplate = restTemplate;
     }
 
     private ReportRequestEntity persistToLocal(ReportRequest request) {
@@ -101,9 +104,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void sendOneDirectRequest(ReportRequest request, FileResponse fileResponse, FileType fileType) {
-        RestTemplate rs = new RestTemplate();
         try {
-            fileResponse = rs.postForEntity(endpoints.getFileService(fileType), request, ExcelResponse.class).getBody();
+            fileResponse = restTemplate.postForEntity(endpoints.getFileService(fileType), request, ExcelResponse.class).getBody();
         } catch (Exception e) {
             log.error(fileType.toString() + "Generation Error (Sync) : e", e);
             fileResponse.setReqId(request.getReqId());
@@ -187,7 +189,6 @@ public class ReportServiceImpl implements ReportService {
 
     private void deleteSyncFile(String fileId, FileType fileType) {
         log.info("Send Sync Request to delete the {} file: {}", fileType.toString(), fileId);
-        RestTemplate restTemplate = new RestTemplate();
         try {
             restTemplate.delete(endpoints.getFileService(fileType) + "/" + fileId);
         } catch (RestClientException e) {

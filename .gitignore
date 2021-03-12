@@ -11,3 +11,12 @@ out
 gen
 *.xlsx
 credentials
+/ConfigServer/.mvn/wrapper/maven-wrapper.jar
+/ServiceDiscovery/.mvn/wrapper/maven-wrapper.jar
+/ConfigServer/.mvn/wrapper/maven-wrapper.properties
+/ServiceDiscovery/.mvn/wrapper/maven-wrapper.properties
+/ConfigServer/.mvn/wrapper/MavenWrapperDownloader.java
+/ServiceDiscovery/.mvn/wrapper/MavenWrapperDownloader.java
+/*/mvnw
+/*/mvnw.cmd
+*.jar
