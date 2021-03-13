@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -37,6 +38,9 @@ public class ReportServiceImpl implements ReportService {
     private final EndpointConfig endpoints;
     private final ExecutorService executorService = Executors.newFixedThreadPool(8);
     private RestTemplate restTemplate;
+
+    @Value("${email.recipient}")
+    String email_recipient;
 
     @Autowired
     public ReportServiceImpl(ReportRequestRepo reportRequestRepo, SNSService snsService, RestTemplate restTemplate,
@@ -92,7 +96,7 @@ public class ReportServiceImpl implements ReportService {
                 () -> sendOneDirectRequest(request, new ExcelResponse(), FileType.EXCEL), executorService);
         CompletableFuture<?> pdfFuture = CompletableFuture.runAsync(
                 () -> sendOneDirectRequest(request, new PDFResponse(), FileType.PDF), executorService);
-        try { // Despite there are no results will be returned (void methods), but we have to make sure the report
+        try { // Despite there are no results will be returned (void method), but we have to make sure the report
             // will only be generated after the threading tasks were done, otherwise the response status will show "PENDING".
             excelFuture.get();
             pdfFuture.get();
@@ -125,7 +129,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    //    @Transactional // why this? email could fail
     public void updateAsyncFileReport(SqsResponse response, FileType fileType) {
         ReportRequestEntity entity = reportRequestRepo.findById(response.getReqId()).orElseThrow(RequestNotFoundException::new);
         BaseReportEntity fileReport = switch (fileType) {
@@ -142,11 +145,11 @@ public class ReportServiceImpl implements ReportService {
             fileReport.setFileId(response.getFileId());
             fileReport.setFileLocation(response.getFileLocation());
             fileReport.setFileSize(response.getFileSize());
+            CompletableFuture<?> sendEmailFuture = CompletableFuture.runAsync(  // Extra thread to send emails avoid blocking.
+                    () -> emailService.sendEmail(email_recipient, EmailType.SUCCESS, entity.getSubmitter()));
         }
         entity.setUpdatedTime(LocalDateTime.now());
         reportRequestRepo.save(entity);
-        String to = "xaiykou@gmail.com";
-        emailService.sendEmail(to, EmailType.SUCCESS, entity.getSubmitter());
     }
 
 

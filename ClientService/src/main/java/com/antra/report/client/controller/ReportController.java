@@ -86,8 +86,6 @@ public class ReportController {
         return ResponseEntity.ok(new GeneralResponse());
     }
 
-//   @PutMapping
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GeneralResponse> handleValidationException(MethodArgumentNotValidException e) {
         log.warn("Input Data invalid: {}", e.getMessage());
