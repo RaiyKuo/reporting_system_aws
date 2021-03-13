@@ -115,6 +115,12 @@ function submit(async) {
             console.info(data);
             $('#create_report_model').modal('toggle');
             loadAll();
+            if (async) {
+                const ws = new WebSocket('ws://' + location.host + '/ws');
+                ws.addEventListener('message', function () {
+                    loadAll();
+                })
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert(jqXHR.responseJSON.message);
