@@ -1,6 +1,6 @@
 # Antra SEP java evaluation project
 
-## About This Version (v/Eureka)
+## About This Version (v/Microservices)
 
 * There are 4 branches (versions) in the Github repository.
 * This version can run in local docker containers or on AWS ECS.
