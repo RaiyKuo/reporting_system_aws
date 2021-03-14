@@ -1,9 +1,10 @@
 # Antra SEP java evaluation project
 
-## About This Version (v/Eureka)
+## About This Version (v/DynamoDB+S3)
 
 * There are 4 branches (versions) in the Github repository.
-* This version uses remote AWS DynamoDB instead of local database.
+* This version uses remote AWS DynamoDB instead of local database, and move the Excel file location from local to AWS
+  S3.
 
 ## Changes/Improvement I Made
 
